@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# lab-specific generated artifacts
+01-reflection-lab/coffee_sales.csv
+01-reflection-lab/*.png
+02-reflection-with-sqlquery/inventory.db
+02-reflection-with-sqlquery/results.html

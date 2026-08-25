@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agentic AI Labs &mdash; portfolio series</title>
+<style>
+  :root {
+    --bg:#faf7f2; --ink:#2b1d13; --muted:#6b5847; --accent:#8b4513;
+    --accent-2:#c47a3d; --card:#ffffff; --line:#e8dfd4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  body {
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink); background: var(--bg);
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 64px 32px 96px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 48px; }
+  h1 { margin: 0 0 8px; font-size: 34px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); font-size: 17px; }
+  h2 { font-size: 14px; margin: 40px 0 12px; text-transform: uppercase;
+       letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+  .labs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+  .lab {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 24px; text-decoration: none; color: inherit;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    display: flex; flex-direction: column;
+  }
+  .lab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139,69,19,.08);
+    border-color: var(--accent-2);
+  }
+  .lab .n {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.05em; margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .lab h3 { margin: 0 0 8px; font-size: 20px; letter-spacing: -0.01em; }
+  .lab p { margin: 0 0 12px; font-size: 14px; color: var(--muted); flex: 1; }
+  .lab .arrow { color: var(--accent); font-weight: 600; font-size: 13px; }
+  .about {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px 24px; font-size: 14px; color: var(--muted);
+  }
+  .about p { margin: 0 0 8px; }
+  .about p:last-child { margin: 0; }
+  .about code { background: #f2ead9; padding: 1px 6px; border-radius: 4px;
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 12.5px; color: var(--ink); }
+  footer {
+    margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--muted);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  @media (max-width: 720px) {
+    .labs { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Agentic AI Labs</h1>
+  <p>A portfolio series exploring agentic AI patterns, one lab at a time.
+     Each lab isolates a single pattern in a small, runnable project.</p>
+</header>
+
+<h2>Labs</h2>
+<div class="labs">
+  <a class="lab" href="01-reflection-lab/">
+    <span class="n">Lab 01 &middot; Reflection</span>
+    <h3>Self-critiquing chart agent</h3>
+    <p>A cheap model drafts matplotlib code from an English request,
+       <code>exec()</code> renders the chart, a stronger model looks at
+       the <em>rendered pixels</em> (not the code) and rewrites.
+       Reflection over an image artifact.</p>
+    <span class="arrow">Open lab &rarr;</span>
+  </a>
+  <a class="lab" href="02-reflection-with-sqlquery/">
+    <span class="n">Lab 02 &middot; Reflection</span>
+    <h3>Self-critiquing SQL agent</h3>
+    <p>Same loop, different artifact: cheap model drafts SQL from an
+       English question, SQLite runs it, the critic judges the <em>rows
+       that came back</em>. Ships two critic variants so you can see
+       what grounded feedback catches that code-review alone misses.</p>
+    <span class="arrow">Open lab &rarr;</span>
+  </a>
+</div>
+
+<h2>About the series</h2>
+<div class="about">
+  <p>Every lab follows the same skeleton &mdash; <code>make_data.py</code>
+     for a seeded synthetic dataset, <code>utils.py</code> for LLM
+     plumbing, a short workflow file, and a self-contained
+     <code>index.html</code> dashboard &mdash; so patterns are easy to
+     compare across labs.</p>
+  <p>Code is at
+     <a href="https://github.com/ArunaSivaram/agentic-ai-labs" style="color: var(--accent);">github.com/ArunaSivaram/agentic-ai-labs</a>.
+     Each lab has its own README with run instructions.</p>
+</div>
+
+<footer>
+  <p>By <a href="https://github.com/ArunaSivaram">Aruna Sivaram</a>.
+     Built with Claude Code.</p>
+</footer>
+
+</main>
+</body>
+</html>

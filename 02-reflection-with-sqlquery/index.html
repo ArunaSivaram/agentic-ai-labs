@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SQL Reflection Lab &mdash; a self-critiquing query agent</title>
+<style>
+:root {
+  --bg:#faf7f2; --ink:#2b1d13; --muted:#6b5847; --accent:#8b4513;
+  --accent-2:#c47a3d; --card:#ffffff; --line:#e8dfd4; --code-bg:#2b1d13;
+  --code-ink:#f5efe6; --good:#2e7d32; --warn:#c62828;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink); background: var(--bg);
+}
+main { max-width: 1080px; margin: 0 auto; padding: 48px 32px 96px; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 40px; }
+h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -0.01em; }
+header p { margin: 0; color: var(--muted); font-size: 17px; }
+h2 { font-size: 22px; margin: 48px 0 16px; letter-spacing: -0.01em; }
+h3 { font-size: 15px; margin: 0 0 6px; text-transform: uppercase;
+     letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+p { margin: 0 0 12px; }
+.lede { font-size: 17px; color: var(--ink); }
+.lede strong { color: var(--accent); }
+
+.diagram {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 32px; margin: 8px 0 32px; overflow-x: auto;
+}
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+         align-items: stretch; }
+.step {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px; position: relative; text-align: center;
+}
+.step .num {
+  display: inline-block; width: 24px; height: 24px; line-height: 24px;
+  border-radius: 50%; background: var(--accent); color: #fff;
+  font-size: 12px; font-weight: 700; margin-bottom: 8px;
+}
+.step h4 { margin: 0 0 4px; font-size: 15px; }
+.step p { margin: 0; font-size: 13px; color: var(--muted); }
+.step .model { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+               font-size: 11px; color: var(--accent-2); margin-top: 8px;
+               display: block; }
+
+.compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 8px 0 24px;
+}
+.frame {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 20px; display: flex; flex-direction: column;
+}
+.frame .cap { margin-top: 8px; font-size: 13px; color: var(--muted); }
+.frame .cap strong { color: var(--ink); }
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 999px; margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.badge.v1 { background: #e8dfd4; color: var(--muted); }
+.badge.v2 { background: var(--accent); color: #fff; }
+
+.notes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.note {
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 20px;
+}
+.note.warn { border-left: 4px solid var(--warn); }
+.note.good { border-left: 4px solid var(--good); }
+.note p { font-size: 14px; color: var(--muted); margin: 0; }
+.note p + p { margin-top: 8px; }
+
+pre {
+  background: var(--code-bg); color: var(--code-ink); padding: 20px;
+  border-radius: 10px; overflow-x: auto; font-size: 13px; line-height: 1.5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.k { color: #ffb86c; }
+.s { color: #a5d6a7; }
+.c { color: #90a4ae; font-style: italic; }
+.n { color: #f78ac2; }
+
+table.data {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  background: #fff; border-radius: 8px; overflow: hidden;
+}
+table.data th, table.data td {
+  padding: 7px 12px; border-bottom: 1px solid var(--line); text-align: left;
+}
+table.data th { background: #f2ead9; font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+table.data td.num, table.data th.num { text-align: right;
+  font-variant-numeric: tabular-nums; }
+table.data tr:last-child td { border-bottom: none; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+        margin: 8px 0 24px; }
+.kpi { background: #fff; border: 1px solid var(--line); border-radius: 10px;
+       padding: 16px 18px; text-align: center; }
+.kpi .num { font-size: 26px; font-weight: 700; color: var(--accent);
+            font-variant-numeric: tabular-nums; }
+.kpi .lbl { font-size: 11px; text-transform: uppercase;
+            letter-spacing: 0.05em; color: var(--muted); margin-top: 4px; }
+
+footer {
+  margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 13px;
+}
+@media (max-width: 720px) {
+  .steps, .compare, .notes, .kpis { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>SQL Reflection Lab</h1>
+  <p>A self-critiquing query agent: cheap model drafts SQL from a plain-English
+     question, SQLite runs it, a stronger model judges the <em>rows that came
+     back</em> and rewrites the query.</p>
+</header>
+
+<p class="lede">
+  Second lab in the agentic-AI series. <strong>01-reflection-lab</strong>
+  reflected on rendered chart pixels; this one reflects on
+  <strong>SQL result rows</strong>. Same draft&nbsp;&rarr;&nbsp;run&nbsp;&rarr;
+  critique&nbsp;&rarr;&nbsp;redraft loop, different artifact under review.
+</p>
+
+<h2>The dataset at a glance</h2>
+<div class="kpis">
+  <div class="kpi"><div class="num">2,083</div><div class="lbl">events</div></div>
+  <div class="kpi"><div class="num">18</div><div class="lbl">SKUs</div></div>
+  <div class="kpi"><div class="num">1,966</div><div class="lbl">sales</div></div>
+  <div class="kpi"><div class="num">&euro;182,677</div><div class="lbl">revenue</div></div>
+</div>
+
+<h2>The loop</h2>
+<div class="diagram">
+  <div class="steps">
+    <div class="step">
+      <span class="num">1</span>
+      <h4>Draft SQL</h4>
+      <p>Cheap model writes a first-pass query from the question and schema.</p>
+      <span class="model">claude-haiku-4-5</span>
+    </div>
+    <div class="step">
+      <span class="num">2</span>
+      <h4>Run</h4>
+      <p>SQLite executes it. The rows are the ground truth for the critic.</p>
+      <span class="model">sqlite3</span>
+    </div>
+    <div class="step">
+      <span class="num">3</span>
+      <h4>Critique</h4>
+      <p>Stronger model judges the answer against the question, then rewrites the query.</p>
+      <span class="model">claude-sonnet-5</span>
+    </div>
+    <div class="step">
+      <span class="num">4</span>
+      <h4>Re-run</h4>
+      <p>Refined SQL runs against the same DB. Compare v1 and v2 side-by-side.</p>
+      <span class="model">sqlite3</span>
+    </div>
+  </div>
+</div>
+
+<h2>Before &amp; after &mdash; a real run</h2>
+<p>Question: <em>&ldquo;Which color of product has the highest total sales?&rdquo;</em></p>
+<div class="compare">
+  <div class="frame">
+    <span class="badge v1">v1 &mdash; naive</span>
+    <pre><span class="k">SELECT</span> color
+<span class="k">FROM</span> events
+<span class="k">WHERE</span> action = <span class="s">'sale'</span>
+<span class="k">GROUP BY</span> color
+<span class="k">ORDER BY</span> <span class="n">SUM</span>(qty_delta * unit_price) <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="n">1</span>;</pre>
+    <table class='data'><thead><tr><th>color</th></tr></thead><tbody><tr><td>red</td></tr></tbody></table>
+    <div class="cap"><strong>Wrong.</strong> Sales store negative qty_delta,
+      so <code>SUM(qty_delta*unit_price)</code> is negative and DESC picks the
+      <em>least-bad</em> seller.</div>
+  </div>
+  <div class="frame">
+    <span class="badge v2">v2 &mdash; reflected</span>
+    <pre><span class="k">SELECT</span> color, <span class="n">SUM</span>(-qty_delta * unit_price) <span class="k">AS</span> total_sales
+<span class="k">FROM</span> events
+<span class="k">WHERE</span> action = <span class="s">'sale'</span>
+<span class="k">GROUP BY</span> color
+<span class="k">ORDER BY</span> total_sales <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="n">1</span>;</pre>
+    <table class='data'><thead><tr><th>color</th><th class="num">total_sales</th></tr></thead><tbody><tr><td>white</td><td class="num">42,947.34</td></tr></tbody></table>
+    <div class="cap"><strong>Right.</strong> Negating <code>qty_delta</code>
+      flips the sign; total is now a real revenue figure the critic can defend.</div>
+  </div>
+</div>
+
+<h2>The event log, explained</h2>
+<div class="notes">
+  <div class="note">
+    <h3>State is derived, not stored</h3>
+    <p>Every row is one event: <code>insert</code>, <code>restock</code>,
+       <code>sale</code>, or <code>price_update</code>. Current stock,
+       current price, revenue &mdash; all are aggregations across time.</p>
+    <p>Great for auditability. Awkward for the LLM: a query that looks
+       simple (&ldquo;what's the price?&rdquo;) needs non-trivial SQL.</p>
+  </div>
+  <div class="note warn">
+    <h3>The sign trap</h3>
+    <p>Sales record <code>qty_delta = -1</code>. Restocks record positive
+       numbers. A first-pass revenue query almost always sums the raw
+       delta and gets a negative total.</p>
+    <p>This is the class of bug reflection exists to catch.</p>
+  </div>
+  <div class="note">
+    <h3>Two critic variants</h3>
+    <p>The lab ships <code>refine_sql_text_only</code> (critic sees only
+       the SQL) and <code>refine_sql_with_rows</code> (critic also sees
+       the returned rows).</p>
+    <p>The rows-aware critic is the one that reliably catches semantic
+       bugs the text-only critic waves through.</p>
+  </div>
+  <div class="note good">
+    <h3>SELECT-only guardrail</h3>
+    <p><code>utils.run_sql</code> rejects anything that isn't <code>SELECT</code>
+       or <code>WITH</code>. The LLM cannot mutate the database even if it
+       tries.</p>
+  </div>
+</div>
+
+<h2>Revenue rollup, right now</h2>
+<p>Numbers pulled live from <code>inventory.db</code> at build time.</p>
+
+<h3>By product name (color variants summed)</h3>
+<table class='data'><thead><tr><th>product_name</th><th class="num">variants</th><th class="num">units_sold</th><th class="num">revenue</th></tr></thead><tbody><tr><td>Aero Runner</td><td class="num">2</td><td class="num">281</td><td class="num">38,667.24</td></tr><tr><td>Cloud Hoodie</td><td class="num">3</td><td class="num">442</td><td class="num">32,888.60</td></tr><tr><td>Trail Ridge Boot</td><td class="num">1</td><td class="num">142</td><td class="num">29,610.47</td></tr><tr><td>Court Classic</td><td class="num">2</td><td class="num">318</td><td class="num">28,302.00</td></tr><tr><td>Storm Shell</td><td class="num">1</td><td class="num">155</td><td class="num">23,022.67</td></tr><tr><td>Merino Tee</td><td class="num">2</td><td class="num">287</td><td class="num">12,915.00</td></tr><tr><td>Trek 25L Pack</td><td class="num">2</td><td class="num">91</td><td class="num">9,974.00</td></tr><tr><td>Commuter Sling</td><td class="num">1</td><td class="num">52</td><td class="num">2,820.64</td></tr><tr><td>Peak Cap</td><td class="num">2</td><td class="num">102</td><td class="num">2,591.57</td></tr><tr><td>Wool Beanie</td><td class="num">1</td><td class="num">44</td><td class="num">968.00</td></tr><tr><td>Trail Socks 3-Pack</td><td class="num">1</td><td class="num">52</td><td class="num">917.10</td></tr></tbody></table>
+
+<h3>Top 10 SKUs (each color variant separately)</h3>
+<table class='data'><thead><tr><th>product_name</th><th>color</th><th>brand</th><th>category</th><th class="num">units_sold</th><th class="num">revenue</th></tr></thead><tbody><tr><td>Trail Ridge Boot</td><td>brown</td><td>Velox</td><td>footwear</td><td class="num">142</td><td class="num">29,610.47</td></tr><tr><td>Storm Shell</td><td>olive</td><td>Northwind</td><td>apparel</td><td class="num">155</td><td class="num">23,022.67</td></tr><tr><td>Aero Runner</td><td>white</td><td>Velox</td><td>footwear</td><td class="num">144</td><td class="num">20,994.24</td></tr><tr><td>Aero Runner</td><td>black</td><td>Velox</td><td>footwear</td><td class="num">137</td><td class="num">17,673.00</td></tr><tr><td>Court Classic</td><td>green</td><td>Baseline</td><td>footwear</td><td class="num">159</td><td class="num">14,151.00</td></tr><tr><td>Court Classic</td><td>white</td><td>Baseline</td><td>footwear</td><td class="num">159</td><td class="num">14,151.00</td></tr><tr><td>Cloud Hoodie</td><td>navy</td><td>Northwind</td><td>apparel</td><td class="num">155</td><td class="num">11,470.00</td></tr><tr><td>Cloud Hoodie</td><td>grey</td><td>Northwind</td><td>apparel</td><td class="num">145</td><td class="num">10,910.60</td></tr><tr><td>Cloud Hoodie</td><td>black</td><td>Northwind</td><td>apparel</td><td class="num">142</td><td class="num">10,508.00</td></tr><tr><td>Merino Tee</td><td>white</td><td>Baseline</td><td>apparel</td><td class="num">153</td><td class="num">6,885.00</td></tr></tbody></table>
+
+<h2>The critic call, in one snippet</h2>
+<pre><span class="c"># The move that makes it reflection rather than a second guess:</span>
+<span class="c"># hand the model the ROWS THAT CAME BACK, not just the SQL that produced them.</span>
+<span class="k">def</span> <span class="n">refine_sql_with_rows</span>(question, sql, rows, cols, schema, model):
+    rendered = utils.rows_as_text(rows, cols, max_rows=<span class="n">20</span>)
+    prompt = <span class="s">f&quot;&quot;&quot;Review the SQL AND its output against the user's question.
+The rows below are the actual result of running the SQL. If the rows do
+not answer the question (wrong sign, empty, wrong grain, missing filter,
+etc.), rewrite the SQL.
+
+User question:
+{question}
+
+SQL that was executed:
+{sql}
+
+Rows returned ({len(rows)} total; showing up to 20):
+{rendered}
+&quot;&quot;&quot;</span>
+    <span class="k">return</span> _parse(utils.get_response(model, prompt, system=SYSTEM),
+                  fallback_sql=sql)</pre>
+
+<footer>
+  <p>Series: agentic-AI reflection labs. Code is in the repo alongside this
+     page. Numbers regenerate deterministically from
+     <code>make_data.py</code> (seed = 11).</p>
+</footer>
+
+</main>
+</body>
+</html>
