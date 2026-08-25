@@ -1,6 +1,6 @@
 # Reflection Lab
 
-**Live dashboard → [arunasivaram.github.io/agentic-ai-01-reflection-lab](https://arunasivaram.github.io/agentic-ai-01-reflection-lab/)**
+**Live dashboard → [arunasivaram.github.io/agentic-ai-labs/01-reflection-lab](https://arunasivaram.github.io/agentic-ai-labs/01-reflection-lab/)**
 
 A self-critiquing chart agent: a cheap model drafts matplotlib code from an
 English request, `exec()` renders it to disk, a stronger model looks at the
@@ -26,7 +26,7 @@ in the working directory.
 ## The dashboard
 
 Live at
-**[arunasivaram.github.io/agentic-ai-01-reflection-lab](https://arunasivaram.github.io/agentic-ai-01-reflection-lab/)** —
+**[arunasivaram.github.io/agentic-ai-labs/01-reflection-lab](https://arunasivaram.github.io/agentic-ai-labs/01-reflection-lab/)** —
 architecture diagram, before/after chart comparison, and design notes.
 Source lives in [`index.html`](./index.html) (self-contained, PNGs
 base64-embedded) if you want to open it locally.

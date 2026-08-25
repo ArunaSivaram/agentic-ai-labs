@@ -1,5 +1,7 @@
 # Reflection Lab #2 — SQL over an Event Log
 
+**Live dashboard → [arunasivaram.github.io/agentic-ai-labs/02-reflection-with-sqlquery](https://arunasivaram.github.io/agentic-ai-labs/02-reflection-with-sqlquery/)**
+
 Same self-critique loop as [`01-reflection-lab`](../01-reflection-lab/), but
 the artifact under review is a **SQL result set**, not a rendered chart. A
 cheap model drafts SQL from an English question, SQLite executes it, and a
